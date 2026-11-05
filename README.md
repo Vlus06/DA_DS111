@@ -21,6 +21,21 @@ Mở Jupyter từ thư mục `notebooks/` vì mọi đường dẫn là `../data
 | NOAA CPC | chỉ số ONI, đo El Niño và La Niña | tệp văn bản theo tháng |
 | Nhập tay | ngày Tết, Giỗ Tổ và mùa cháy tạm theo vùng | bảng trong `utils_firerisk.py` |
 
+## Dữ liệu
+
+Toàn bộ dữ liệu (khoảng 1,2 GB, hơn 1.900 tệp CSV) nằm trên Hugging Face, không nằm trong repo này: https://huggingface.co/datasets/VLUS06/vn-forest-fire-data
+
+Repo giữ sẵn cây thư mục `data/` rỗng. Tải dữ liệu về đúng vị trí bằng một lệnh, chạy từ thư mục gốc của repo:
+
+```bash
+pip install -U huggingface_hub
+```
+```bash
+huggingface-cli download VLUS06/vn-forest-fire-data --repo-type dataset --local-dir data
+```
+
+Sau khi tải, cây thư mục phải giống như bên dưới. Nếu chỉ muốn xem phân tích thì chỉ cần `data/clean/` và `data/interim/hotspots_enriched.csv`, các notebook 04 và 05 đọc từ đó.
+
 ## Cấu trúc thư mục
 
 ```
@@ -37,7 +52,7 @@ DoAn_CayRung/
 │   ├── utils_firerisk.py               # hàm dùng chung: tên tỉnh, giờ địa phương, chỉ số Nesterov, đặc trưng trễ, lịch, ONI
 │   └── test_utils.py                   # kiểm thử cho utils_firerisk.py
 │
-├── data/                               # toàn bộ là CSV
+├── data/                               # toàn bộ là CSV; trong repo chỉ có cây thư mục rỗng, dữ liệu tải từ Hugging Face
 │   ├── raw/                            # dữ liệu thô tải về, notebook 01 ghi
 │   │   ├── firms/                      # 1.019 tệp, mỗi tệp một đoạn 5 ngày điểm cháy VIIRS S-NPP
 │   │   │   └── VIIRS_SNPP_SP_<bbox>_<ngày bắt đầu>_5.csv
@@ -48,12 +63,12 @@ DoAn_CayRung/
 │   ├── interim/                        # bảng trung gian, notebook 01 ghi và notebook 02 đọc
 │   │   ├── prov_table.csv              # 63 tỉnh: khóa, vùng, toạ độ đại diện, diện tích
 │   │   ├── static_prov.csv             # đặc trưng tĩnh mỗi tỉnh: tỉ lệ rừng, nông nghiệp, cỏ, đô thị, độ cao
-│   │   ├── hotspots_enriched.csv       # 947.287 điểm cháy trong 63 tỉnh, đã gắn tỉnh, giờ địa phương và lớp phủ WorldCover (Git LFS)
+│   │   ├── hotspots_enriched.csv       # 947.287 điểm cháy trong 63 tỉnh, đã gắn tỉnh, giờ địa phương và lớp phủ WorldCover
 │   │   ├── oni.csv                     # chỉ số ONI (ENSO) theo tháng, tự tải khi chưa có
 │   │   └── README.txt
 │   │
 │   ├── processed/                      # bảng gộp, notebook 02 ghi
-│   │   ├── panel.csv                   # bảng tỉnh x ngày, 320.985 dòng x 77 cột, có 26 biến thể P (253 MB, không có trong repo, notebook 02 tạo ra)
+│   │   ├── panel.csv                   # bảng tỉnh x ngày, 320.985 dòng x 77 cột, có 26 biến thể P (253 MB, notebook 02 tạo ra)
 │   │   ├── gate2_province_year.csv     # số ngày và số điểm cháy rừng theo tỉnh-năm
 │   │   └── manifest.csv                # tham số và mã băm các tệp của lần chạy notebook 02
 │   │
@@ -83,6 +98,4 @@ interim/ ──02──► processed/panel.csv ──03──► clean/panel_cle
 2. Đặt biến môi trường `FIRMS_MAP_KEY` trước khi mở Jupyter.
 3. Chạy lần lượt 01 đến 05. Tệp đã tải trong `data/raw` được dùng lại, không tải lại.
 
-Dữ liệu thô và bảng trung gian đã có sẵn trong repo nên có thể bắt đầu từ notebook 02. `data/processed/panel.csv` (253 MB) quá lớn để đưa lên GitHub nên không có trong repo; chạy notebook 02 để tạo ra nó. Nếu chỉ muốn xem phân tích thì `data/clean/panel_clean.csv` đã có sẵn, chạy thẳng từ notebook 04.
-
-`hotspots_enriched.csv` lưu bằng Git LFS, cần cài `git-lfs` trước khi clone.
+Nếu đã tải dữ liệu từ Hugging Face thì có thể bắt đầu từ notebook 02 (cần `data/raw` và `data/interim`), hoặc chạy thẳng từ notebook 04 với `data/clean/panel_clean.csv`. Chỉ khi muốn thu thập lại từ nguồn gốc mới cần chạy notebook 01 và đặt khóa FIRMS.
