@@ -24,7 +24,7 @@ docs/                         prereg_v1.md, ket_qua_phan_tich_dev.xlsx
 
 Chỉ chạy 03 và 04 thì không cần các bước trên vì `data/processed/panel_dev.csv` đã có sẵn.
 
-Thiếu so với bản đầy đủ: `data/interim/hotspots_enriched.csv` và 767 trong 945 tệp thời tiết `data/raw/wx/<tỉnh>_<năm>.csv`. Notebook 01 sẽ tải bù phần thiếu.
+Thiếu so với bản đầy đủ: `data/interim/hotspots_enriched.csv`. Notebook 01 sẽ tải bù phần thiếu.
 
 ## Quy tắc
 
