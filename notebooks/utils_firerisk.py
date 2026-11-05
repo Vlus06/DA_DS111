@@ -79,23 +79,6 @@ def season_label(ts, months):
     return ts.year - 1 if (wraps and ts.month <= months[-1]) else ts.year
 
 
-def complete_seasons(months, win_start, win_end):
-    wraps = months[0] > months[-1]
-    out = []
-    for y in range(win_start.year - 1, win_end.year + 1):
-        start = pd.Timestamp(y, months[0], 1)
-        end_year = y + 1 if wraps else y
-        end = pd.Timestamp(end_year, months[-1], 1) + pd.offsets.MonthEnd(0)
-        if start >= win_start and end <= win_end:
-            out.append(y)
-    return out
-
-
-def sealed_start(months, win0, win1, n):
-    seasons = sorted(complete_seasons(months, win0, win1))
-    return pd.Timestamp(seasons[-n], months[0], 1) if len(seasons) >= n else None
-
-
 def magnus_es(t_c):
     t_c = np.asarray(t_c, dtype=float)
     return 6.112 * np.exp(17.62 * t_c / (243.12 + t_c))

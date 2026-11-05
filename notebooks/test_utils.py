@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 
 from utils_firerisk import (
-    REGION, build_panel, calendar_features, canon_key, cluster_events, complete_seasons,
+    REGION, build_panel, calendar_features, canon_key, cluster_events,
     add_lag_features, daily_from_hourly, days_since_rain, local_dt, magnus_es, nesterov_series,
-    norm_name, parse_oni, sample_tile, sealed_start, season_label, summarize_events, tile_name,
+    norm_name, parse_oni, sample_tile, season_label, summarize_events, tile_name,
 )
 
 
@@ -22,13 +22,6 @@ def test_seasons():
     assert season_label(pd.Timestamp("2024-12-15"), months) == 2024
     assert season_label(pd.Timestamp("2025-02-01"), months) == 2024
     assert np.isnan(season_label(pd.Timestamp("2025-07-01"), months))
-    win0, win1 = pd.Timestamp("2012-01-20"), pd.Timestamp("2025-12-31")
-    seasons = complete_seasons(months, win0, win1)
-    assert seasons[0] == 2012 and seasons[-1] == 2024
-    seasons = complete_seasons([4, 5, 6, 7, 8], win0, win1)
-    assert seasons[0] == 2012 and seasons[-1] == 2025
-    assert sealed_start(months, win0, win1, 2) == pd.Timestamp("2023-11-01")
-    assert sealed_start([4, 5, 6, 7, 8], win0, win1, 2) == pd.Timestamp("2024-04-01")
 
 
 def test_local_time():
