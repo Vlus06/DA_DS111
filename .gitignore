@@ -1,0 +1,7 @@
+data/processed/panel_dev.csv
+data/processed/panel_SEALED_DO_NOT_OPEN.csv
+data/clean/panel_clean.csv
+data/raw/firms/
+data/interim/hotspots_enriched.csv
+__pycache__/
+.ipynb_checkpoints/

@@ -1,0 +1,7 @@
+region,best_variant,delta,ci_lo,ci_hi,p,p_holm
+TB,P_linear5_Dsat,0.0007,-0.0003,0.0019,0.085,0.2549
+DB,P_alt19_binary5_Dsat,0.0055,-0.0041,0.0162,0.1359,0.2719
+BTB,P_alt19_binary5_Dsat,0.0035,0.0011,0.0056,0.0015,0.006
+NTB,P_alt19_linear7_Dsat,0.0013,-0.0012,0.0038,0.1499,0.2719
+TN,P_alt19_linear7_Dsat,0.0033,0.001,0.0055,0.001,0.005
+DNB,P_alt19_binary5_Dsat,0.0015,0.0008,0.0021,0.0005,0.003
