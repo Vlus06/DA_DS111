@@ -1,5 +1,7 @@
 # Nguy cơ cháy rừng Việt Nam (63 tỉnh, 2012–2025)
 
+Dữ liệu: [VLUS06/vn-forest-fire-data](https://huggingface.co/datasets/VLUS06/vn-forest-fire-data) trên Hugging Face.
+
 Câu hỏi: chỉ số cháy kiểu Nesterov (P) có đủ tin cậy để cảnh báo cháy rừng ở Việt Nam không? Notebook `05_cau_chuyen` kể câu chuyện đầy đủ, tóm tắt như sau.
 
 - P hơn khí hậu thuần túy nhưng thua một biến đo ngay trong ngày (độ hụt bão hòa) ở cả sáu vùng có rừng, vì khô kéo dài quá một tuần không làm cháy dễ hơn và mưa dưới 5 mm đã đủ dập cháy ở phần lớn các vùng.
@@ -23,7 +25,7 @@ Mở Jupyter từ thư mục `notebooks/` vì mọi đường dẫn là `../data
 
 ## Dữ liệu
 
-Toàn bộ dữ liệu (khoảng 1,2 GB, hơn 1.900 tệp CSV) nằm trên Hugging Face, không nằm trong repo này: https://huggingface.co/datasets/VLUS06/vn-forest-fire-data
+Toàn bộ dữ liệu (khoảng 1,2 GB, hơn 1.900 tệp CSV) nằm trên Hugging Face, không nằm trong repo này: [VLUS06/vn-forest-fire-data](https://huggingface.co/datasets/VLUS06/vn-forest-fire-data)
 
 Repo giữ sẵn cây thư mục `data/` rỗng. Tải dữ liệu về đúng vị trí bằng một lệnh, chạy từ thư mục gốc của repo:
 
