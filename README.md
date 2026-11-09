@@ -21,7 +21,7 @@ Mở Jupyter từ thư mục `notebooks/` vì mọi đường dẫn là `../data
 | ESA WorldCover 2021 | lớp phủ đất 10 m, để phân biệt điểm cháy trên rừng với cháy đồng ruộng và đô thị | đọc ảnh COG trên AWS S3 |
 | geoBoundaries ADM1 | ranh giới 63 tỉnh cũ, để gán mỗi điểm cháy vào một tỉnh | tải qua API |
 | NOAA CPC | chỉ số ONI, đo El Niño và La Niña | tệp văn bản theo tháng |
-| Nhập tay | ngày Tết, Giỗ Tổ và mùa cháy tạm theo vùng | bảng trong `utils_firerisk.py` |
+| Nhập tay | ngày Tết, Giỗ Tổ (kiểm chứng bằng thư viện lịch âm) | bảng trong `utils_firerisk.py` |
 
 ## Dữ liệu
 
