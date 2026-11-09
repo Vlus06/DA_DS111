@@ -95,7 +95,6 @@ def daily_from_hourly(hourly, hour=13):
         d["RH13"] = sel["relative_humidity_2m"]
     else:
         d["RH13"] = 100 * magnus_es(d["Td13"]) / magnus_es(d["T13"])
-    d["wind13"] = sel["wind_speed_10m"] if "wind_speed_10m" in sel else np.nan
     d["D13_hpa"] = magnus_es(d["T13"]) - magnus_es(d["Td13"])
     d["dd13_c"] = d["T13"] - d["Td13"]
 
@@ -151,7 +150,6 @@ def add_lag_features(d, clim_end="2023-12-31"):
     doy = d.index.dayofyear
     d["T13_anom"] = d["T13"].values - smooth["T13"].reindex(doy).values
     d["D13_anom"] = d["D13_hpa"].values - smooth["D13_hpa"].reindex(doy).values
-    d["wx_missing"] = d[["T13", "D13_hpa", "rain_cal"]].isna().any(axis=1).astype(int)
     return d
 
 

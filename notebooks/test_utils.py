@@ -99,7 +99,6 @@ def test_lag_features():
     }, index=idx)
     f = add_lag_features(d)
     assert abs(f["rain_7d"].iloc[10] - d["rain_cal"].iloc[4:11].sum()) < 1e-9
-    assert f["wx_missing"].sum() == 0
     assert abs(f.loc[:"2023-12-31", "T13_anom"].mean()) < 0.5
 
 

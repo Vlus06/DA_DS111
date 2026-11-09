@@ -70,7 +70,7 @@ DoAn_CayRung/
 │   │   └── README.txt
 │   │
 │   ├── processed/                      # bảng gộp, notebook 02 ghi
-│   │   ├── panel.csv                   # bảng tỉnh x ngày, 320.985 dòng x 75 cột, có 26 biến thể P (253 MB, notebook 02 tạo ra)
+│   │   ├── panel.csv                   # bảng tỉnh x ngày, 320.985 dòng x 74 cột, có 27 biến thể P (253 MB, notebook 02 tạo ra)
 │   │   ├── gate2_province_year.csv     # số ngày và số điểm cháy rừng theo tỉnh-năm
 │   │   └── manifest.csv                # tham số và mã băm các tệp của lần chạy notebook 02
 │   │
