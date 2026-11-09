@@ -60,72 +60,73 @@ Bộ dữ liệu ghép điểm cháy do vệ tinh VIIRS ghi nhận, thời tiế
 
 \section{Nguồn dữ liệu và quy trình thu thập}
 
-Dữ liệu được thu thập từ năm nguồn bên ngoài và một bảng nhập tay, rồi ghép theo khóa (tỉnh, ngày). Bảng~\ref{tab:sources} tóm tắt từng nguồn, nội dung lấy và phạm vi; các mục con mô tả chi tiết.
+Dữ liệu được thu thập từ năm nguồn bên ngoài và một bảng ngày lễ, rồi ghép theo khóa (tỉnh, ngày). Những định nghĩa do nhóm tự đặt được ghi rõ là của nhóm; các số liệu và công thức lấy từ tài liệu đều có trích dẫn ở mục Tài liệu tham khảo. Bảng~\ref{tab:sources} tóm tắt từng nguồn.
 
 \begingroup
 \small
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3.0cm}@{}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{4.7cm}>{\raggedright\arraybackslash}p{2.0cm}@{}}
 \caption{Các nguồn dữ liệu}\label{tab:sources}\\
 \toprule
-Nguồn & Nội dung thu thập & Phạm vi & Cách lấy \\
+Nguồn & Nội dung thu thập & Phạm vi & Trích dẫn \\
 \midrule
 \endfirsthead
 \toprule
-Nguồn & Nội dung thu thập & Phạm vi & Cách lấy \\
+Nguồn & Nội dung thu thập & Phạm vi & Trích dẫn \\
 \midrule
 \endhead
 \bottomrule
 \endfoot
-NASA FIRMS, VIIRS S-NPP (\texttt{VIIRS\_SNPP\_SP}) & Điểm cháy: vị trí, ngày giờ ghi nhận (UTC), độ tin cậy, công suất bức xạ cháy, ban ngày hay ban đêm & 20/01/2012 đến 31/12/2025; khung bao Việt Nam; 5.455.690 điểm thô, 947.287 điểm nằm trong 63 tỉnh & API theo khối 5 ngày (1.019 khối) \\
-Open-Meteo Archive (ERA5) & Nhiệt độ 2 m, điểm sương 2 m, lượng mưa, theo giờ; độ cao điểm lấy mẫu & 2011 đến 2025 (2011 để khởi động các biến trễ); mỗi tỉnh một điểm đại diện; độ phân giải gốc khoảng $0{,}25^\circ$ & API theo tỉnh và năm (945 tệp) \\
-ESA WorldCover 2021 (v200) & Lớp phủ đất độ phân giải 10 m, dùng để xác định điểm cháy trên đất rừng và tỉ lệ các loại đất của tỉnh & Năm 2021, phủ toàn lãnh thổ & Đọc trực tiếp ảnh COG trên AWS S3 \\
-geoBoundaries (ADM1) & Ranh giới hành chính cấp tỉnh, dùng để gán điểm cháy vào tỉnh và tính diện tích & 63 tỉnh theo ranh giới cũ & Tải qua API của geoBoundaries \\
-NOAA CPC & Chỉ số ONI theo tháng & Từ 1950 đến nay, bảng dùng 2012--2025 & Tệp văn bản \texttt{oni.ascii.txt} \\
-Nhập tay & Ngày mùng 1 Tết, ngày Giỗ Tổ, ngày lễ dương lịch & 2012--2025 & Bảng viết trong mã nguồn \\
+NASA FIRMS, sản phẩm \texttt{VIIRS\_SNPP\_SP} (VIIRS Suomi-NPP, Standard Processing) & Điểm cháy 375 m: vị trí, ngày giờ ghi nhận, độ tin cậy, công suất bức xạ cháy, ban ngày hay ban đêm & Từ 20/01/2012 đến 31/12/2025, khung bao Việt Nam; 5.455.690 điểm thô, trong đó 947.287 điểm nằm trong 63 tỉnh & \cite{schroeder2014,firms} \\
+Open-Meteo Archive, mô hình ERA5 & \texttt{temperature\_2m}, \texttt{dew\_point\_2m}, \texttt{precipitation} theo giờ; \texttt{elevation} & 2011 đến 2025 (2011 để khởi động các biến cộng dồn); một điểm đại diện cho mỗi tỉnh; lưới ERA5 khoảng $0{,}25^\circ$ theo tài liệu Open-Meteo & \cite{hersbach2020,openmeteo} \\
+ESA WorldCover 2021 v200 & Bản đồ lớp phủ đất 10 m & Năm tham chiếu 2021, toàn cầu; độ chính xác tổng thể toàn cầu 76,7\% $\pm$ 0,5 & \cite{zanaga2022} \\
+geoBoundaries (gbOpen, ADM1) & Ranh giới hành chính cấp tỉnh & 63 tỉnh, thành phố theo ranh giới trước sáp nhập năm 2025 & \cite{runfola2020} \\
+NOAA CPC & Chỉ số ONI theo tháng & Tệp tải ngày 05/11/2026, bảng dùng 2012--2025 & \cite{noaaoni} \\
+Bảng ngày lễ & Mùng 1 Tết, Giỗ Tổ Hùng Vương, ngày lễ dương lịch & 2012--2025 & \cite{bllđ2019} \\
 \end{longtable}
 \endgroup
 
 \subsection{Điểm cháy: NASA FIRMS, VIIRS S-NPP}
 
-Dùng sản phẩm xử lý chuẩn \texttt{VIIRS\_SNPP\_SP} qua API vùng của FIRMS (\url{https://firms.modaps.eosdis.nasa.gov/api/area}). API chỉ cho lấy tối đa 5 ngày mỗi lần gọi nên khoảng 14 năm được chia thành 1.019 khối, trong khung bao kinh độ 102,046 đến 115,097 và vĩ độ 8,340 đến 23,491. Sau khi loại điểm trùng còn 5.455.690 điểm cháy thô (độ tin cậy \texttt{n}: 4.716.816; \texttt{l}: 498.940; \texttt{h}: 239.934).
+Dùng sản phẩm \texttt{VIIRS\_SNPP\_SP} (VIIRS Suomi-NPP, Standard Processing) qua API vùng của FIRMS (\url{https://firms.modaps.eosdis.nasa.gov/api/area/}). Mỗi lần gọi lấy 5 ngày liên tiếp (\texttt{DAY\_RANGE} bằng 5) trong khung bao kinh độ 102,046 đến 115,097 và vĩ độ 8,340 đến 23,491, nên giai đoạn 20/01/2012 đến 31/12/2025 được chia thành 1.019 khối. Sau khi loại điểm trùng còn 5.455.690 điểm cháy thô, gồm 4.716.816 điểm độ tin cậy \texttt{nominal} (\texttt{n}), 498.940 điểm \texttt{low} (\texttt{l}) và 239.934 điểm \texttt{high} (\texttt{h}); các số này đã được tính lại trực tiếp từ 1.019 tệp thô. Sản phẩm điểm cháy VIIRS 375 m được mô tả trong Schroeder và cộng sự~\cite{schroeder2014}; dữ liệu VIIRS 375 m của S-NPP có trên FIRMS từ 20/01/2012~\cite{arset}, đúng ngày bắt đầu của bảng này.
 
 Các bước xử lý:
 \begin{enumerate}
 \item Gán mỗi điểm cháy vào tỉnh chứa nó bằng phép giao không gian với ranh giới geoBoundaries; còn 947.287 điểm nằm trong 63 tỉnh.
-\item Đổi giờ ghi nhận từ UTC sang giờ địa phương (UTC+7), rồi lấy ngày địa phương làm ngày của điểm cháy. Vệ tinh bay qua Việt Nam khoảng 13 giờ (ban ngày) và 1 giờ (ban đêm) giờ địa phương.
-\item Gắn lớp phủ đất (xem mục sau) và đánh dấu điểm cháy trên đất rừng.
-\item Chỉ giữ điểm có độ tin cậy \texttt{nominal} hoặc \texttt{high} khi đếm, bỏ điểm \texttt{low}.
+\item Đổi giờ ghi nhận (\texttt{acq\_time}, xử lý là giờ UTC) sang giờ địa phương UTC+7, rồi lấy ngày địa phương làm ngày của điểm cháy. Sau khi đổi, giờ trung vị của các lần bay qua là 13 giờ (ban ngày) và 1 giờ (ban đêm), ổn định qua các năm, phù hợp với giờ cắt xích đạo khoảng 13:30 và 01:30 của S-NPP~\cite{schroeder2014}.
+\item Gắn lớp phủ đất (Mục~\ref{sec:worldcover}) và đánh dấu điểm cháy trên đất rừng.
+\item Khi đếm theo tỉnh-ngày, chỉ giữ điểm có độ tin cậy \texttt{nominal} hoặc \texttt{high} và bỏ điểm \texttt{low}. Đây là lựa chọn của nhóm.
 \end{enumerate}
 
-\subsection{Thời tiết: Open-Meteo Archive (tái phân tích ERA5)}
+\subsection{Thời tiết: Open-Meteo Archive (ERA5)}
 
-Lấy dữ liệu theo giờ từ API \url{https://archive-api.open-meteo.com/v1/archive}, mô hình \texttt{era5}, múi giờ \texttt{Asia/Bangkok}, gồm ba biến \texttt{temperature\_2m}, \texttt{dew\_point\_2m} và \texttt{precipitation}. Mỗi tỉnh lấy tại một điểm đại diện (điểm nằm trong đa giác ranh giới), mỗi lần gọi một tỉnh và một năm, tổng cộng 945 tệp (63 tỉnh $\times$ 15 năm từ 2011 đến 2025). Năm 2011 chỉ dùng để khởi động các biến cộng dồn và biến trễ, không xuất hiện trong bảng cuối.
+Lấy dữ liệu theo giờ từ API \url{https://archive-api.open-meteo.com/v1/archive} với tham số \texttt{models=era5} và múi giờ \texttt{Asia/Bangkok}, gồm ba biến \texttt{temperature\_2m}, \texttt{dew\_point\_2m} và \texttt{precipitation}. ERA5 là bộ tái phân tích khí quyển toàn cầu của ECMWF~\cite{hersbach2020}; Open-Meteo là dịch vụ phân phối dữ liệu này~\cite{openmeteo}. Mỗi tỉnh lấy tại một điểm đại diện (điểm nằm trong đa giác ranh giới), mỗi lần gọi một tỉnh và một năm, tổng cộng 945 tệp (63 tỉnh $\times$ 15 năm từ 2011 đến 2025). Năm 2011 chỉ dùng để khởi động các biến cộng dồn và biến trễ, không xuất hiện trong bảng cuối.
 
-Từ chuỗi theo giờ, bảng cuối chỉ giữ giá trị tại 13 giờ địa phương cho nhiệt độ và điểm sương (đúng lúc vệ tinh bay qua ban ngày), còn lượng mưa được cộng theo ngày. Độ ẩm tương đối, độ hụt bão hòa và các chỉ số Nesterov được tính từ các biến này (xem Mục~\ref{sec:features}).
+Từ chuỗi theo giờ, bảng cuối giữ giá trị có nhãn 13:00 giờ địa phương cho nhiệt độ và điểm sương, vì lúc đó S-NPP bay qua ban ngày, còn lượng mưa được cộng theo ngày (xem định nghĩa chính xác ở Mục~\ref{sec:features}). Độ ẩm tương đối, độ hụt bão hòa và các chỉ số kiểu Nesterov được tính từ các biến này. Vì mỗi tỉnh chỉ có một điểm lấy mẫu trên lưới khoảng 25 km, thời tiết là giá trị đại diện cho tỉnh chứ không phải trung bình theo diện tích.
 
-\subsection{Lớp phủ đất: ESA WorldCover 2021}
+\subsection{Lớp phủ đất: ESA WorldCover 2021}\label{sec:worldcover}
 
-Dùng bản đồ lớp phủ 10 m phiên bản 2021 v200, đọc trực tiếp từ các ô 3 độ $\times$ 3 độ định dạng COG trên AWS S3. Có hai cách dùng:
+Dùng ESA WorldCover 10 m 2021 v200~\cite{zanaga2022}, phát hành theo giấy phép CC BY 4.0, được cung cấp dưới dạng các ô $3^\circ \times 3^\circ$ định dạng COG; dữ liệu được đọc trực tiếp từ kho lưu trữ trên AWS S3. Bảng mã lớp theo tài liệu sản phẩm gồm 10 (Tree cover), 20 (Shrubland), 30 (Grassland), 40 (Cropland), 50 (Built-up) và các lớp khác. Có hai cách dùng:
 \begin{itemize}
-\item Với từng điểm cháy: lấy mẫu 9 điểm (điểm cháy và 8 điểm cách nó 190 m theo 8 hướng), tính tỉ lệ điểm thuộc lớp cây (mã 10) làm \texttt{tree\_frac}. Điểm cháy được coi là trên đất rừng nếu \texttt{tree\_frac} $\ge 0{,}5$.
+\item Với từng điểm cháy: lấy mẫu 9 điểm (điểm cháy và 8 điểm cách nó 190 m theo 8 hướng), tính tỉ lệ điểm thuộc lớp cây (mã 10) làm \texttt{tree\_frac}. Điểm cháy được coi là trên đất rừng nếu \texttt{tree\_frac} $\ge 0{,}5$ (ngưỡng do nhóm đặt).
 \item Với từng tỉnh: lấy 1.500 điểm ngẫu nhiên trong ranh giới và tính tỉ lệ các lớp cây (10), cỏ (30), nông nghiệp (40), xây dựng (50); đây là các cột \texttt{forest\_share}, \texttt{grass\_share}, \texttt{crop\_share}, \texttt{built\_share}.
 \end{itemize}
+Theo tài liệu sản phẩm, độ chính xác tổng thể toàn cầu của bản đồ 2021 là 76,7\% $\pm$ 0,5; độ chính xác ở Việt Nam không được kiểm tra riêng trong bộ dữ liệu này.
 
 \subsection{Ranh giới hành chính: geoBoundaries}
 
-Dùng ranh giới ADM1 của Việt Nam từ API geoBoundaries (\texttt{gbOpen}). Dữ liệu được chuẩn hóa tên tỉnh để khớp với bảng vùng, gộp Côn Đảo vào Bà Rịa -- Vũng Tàu, và giữ đủ 63 tỉnh theo ranh giới cũ. Diện tích tỉnh tính trên hệ tọa độ UTM 48N.
+Dùng ranh giới ADM1 của Việt Nam từ cơ sở dữ liệu geoBoundaries (\texttt{gbOpen})~\cite{runfola2020}, tải qua API của geoBoundaries. Tên tỉnh được chuẩn hóa để khớp với bảng vùng, Côn Đảo được gộp vào Bà Rịa -- Vũng Tàu, và giữ đủ 63 tỉnh theo ranh giới trước đợt sáp nhập năm 2025. Diện tích tỉnh tính xấp xỉ trên hệ tọa độ UTM 48N.
 
 \subsection{Chỉ số ENSO: NOAA CPC}
 
-Lấy chỉ số ONI theo tháng từ \url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}. Mỗi ngày nhận giá trị ONI của tháng chứa nó (\texttt{oni}) và của tháng cách đó 3 tháng (\texttt{oni\_lag3}).
+Lấy chỉ số ONI từ tệp \url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt} vào ngày 05/11/2026. Theo CPC, ONI là trung bình trượt 3 tháng của dị thường nhiệt độ mặt biển vùng Ni\~no 3.4, tính so với mốc cơ sở 30 năm được cập nhật 5 năm một lần; ngưỡng $\pm 0{,}5\,^\circ$C dùng để phân pha nóng và lạnh~\cite{noaaoni}. Các giá trị gần đây là ước tính và có thể được CPC hiệu chỉnh về sau, và CPC hiện dùng chỉ số RONI cho giám sát chính thức nhưng vẫn tiếp tục công bố ONI~\cite{noaaoni}. Mỗi ngày nhận giá trị ONI của tháng chứa nó (\texttt{oni}) và của tháng cách đó 3 tháng (\texttt{oni\_lag3}).
 
-\subsection{Thông tin nhập tay}
+\subsection{Ngày lễ}\label{sec:holidays}
 
-Gồm hai nhóm. Một, ngày mùng 1 Tết Nguyên đán và ngày Giỗ Tổ Hùng Vương (10/3 âm lịch) cho từng năm 2012 đến 2025. Hai, các ngày lễ dương lịch 1/1, 30/4, 1/5, 2/9 và khoảng 4 đến 6 tháng 4 (Thanh minh).
+Gồm ngày mùng 1 Tết Nguyên đán và ngày Giỗ Tổ Hùng Vương (10/3 âm lịch) cho từng năm 2012 đến 2025, cùng các ngày lễ dương lịch 1/1, 30/4, 1/5 và 2/9. Đây đều là các ngày nghỉ lễ theo Điều 112 Bộ luật Lao động 2019~\cite{bllđ2019}. Cả 28 ngày âm lịch (14 ngày mùng 1 Tết và 14 ngày Giỗ Tổ) được nhập tay rồi đối chiếu với kết quả quy đổi của một thư viện lịch âm độc lập (\texttt{lunardate}); cả 28 ngày đều khớp. Khoảng 4 đến 6 tháng 4 dương lịch (cột \texttt{thanh\_minh\_win1}) và các cửa sổ $\pm 3$ ngày quanh Tết, $\pm 1$ ngày quanh Giỗ Tổ là định nghĩa của nhóm.
 
 \section{Phạm vi dữ liệu}\label{sec:pham-vi}
 
-\textbf{Thời gian.} Từ 20/01/2012 (ngày đầu tiên có dữ liệu VIIRS S-NPP chuẩn) đến 31/12/2025, tổng cộng 5.095 ngày liên tục cho mỗi tỉnh.
+\textbf{Thời gian.} Từ 20/01/2012 (ngày dữ liệu VIIRS 375 m của S-NPP bắt đầu có trên FIRMS~\cite{arset}) đến 31/12/2025, tổng cộng 5.095 ngày liên tục cho mỗi tỉnh.
 
 \textbf{Không gian.} 63 tỉnh, thành phố chia thành 8 vùng (Bảng~\ref{tab:regions}).
 
@@ -173,7 +174,7 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \endfoot
 \texttt{date} & ngày & -- & Ngày theo giờ địa phương Việt Nam (UTC+7), định dạng \texttt{YYYY-MM-DD}. Cùng với \texttt{prov} tạo thành khóa chính của bảng. & 5095 giá trị & 0{,}0 \\
 \texttt{prov} & chuỗi & -- & Khóa tỉnh: tên không dấu, viết thường, đã chuẩn hóa (ví dụ \texttt{ba ria vung tau}). 63 tỉnh theo ranh giới cũ. & 63 giá trị & 0{,}0 \\
-\texttt{region} & chuỗi & -- & Mã vùng khí hậu và địa lý của tỉnh: \texttt{TB}, \texttt{DB}, \texttt{DBSH}, \texttt{BTB}, \texttt{NTB}, \texttt{TN}, \texttt{DNB}, \texttt{DBSCL} (xem Mục~\ref{sec:pham-vi}). & 8 giá trị & 0{,}0 \\
+\texttt{region} & chuỗi & -- & Mã vùng do nhóm tự phân nhóm từ các vùng địa lý quen dùng, không theo một văn bản duy nhất: \texttt{TB}, \texttt{DB}, \texttt{DBSH}, \texttt{BTB}, \texttt{NTB}, \texttt{TN}, \texttt{DNB}, \texttt{DBSCL} (xem Mục~\ref{sec:pham-vi}). & 8 giá trị & 0{,}0 \\
 \end{longtable}
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.35cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.0cm}@{}}
@@ -188,11 +189,11 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \endhead
 \bottomrule
 \endfoot
-\texttt{T13} & số thực & $^\circ$C & Nhiệt độ không khí tại độ cao 2 m lúc 13 giờ địa phương (\texttt{temperature\_2m}). & 2{,}3 -- 41{,}7 & 0{,}0 \\
-\texttt{Td13} & số thực & $^\circ$C & Nhiệt độ điểm sương tại 2 m lúc 13 giờ (\texttt{dew\_point\_2m}). & $-$6{,}4 -- 29{,}9 & 0{,}0 \\
-\texttt{RH13} & số thực & \% & Độ ẩm tương đối lúc 13 giờ, tính từ \texttt{T13} và \texttt{Td13} bằng công thức Magnus: $RH = 100\,e_s(T_d)/e_s(T)$ với $e_s(t)=6{,}112\exp\!\big(17{,}62\,t/(243{,}12+t)\big)$. & 15{,}49 -- 100 & 0{,}0 \\
+\texttt{T13} & số thực & $^\circ$C & Nhiệt độ không khí tại 2 m (\texttt{temperature\_2m}), lấy giá trị có nhãn thời gian 13:00 giờ địa phương. & 2{,}3 -- 41{,}7 & 0{,}0 \\
+\texttt{Td13} & số thực & $^\circ$C & Nhiệt độ điểm sương tại 2 m (\texttt{dew\_point\_2m}), lấy giá trị có nhãn 13:00 giờ địa phương. & $-$6{,}4 -- 29{,}9 & 0{,}0 \\
+\texttt{RH13} & số thực & \% & Độ ẩm tương đối lúc 13 giờ, tính từ \texttt{T13} và \texttt{Td13}: $RH = 100\,e_s(T_d)/e_s(T)$, với $e_s(t)=6{,}112\exp\!\big(17{,}62\,t/(243{,}12+t)\big)$ hPa và $t$ tính bằng $^\circ$C. Đây là dạng Magnus--Tetens theo khuyến nghị của WMO, hệ số cho mặt nước, dùng trong khoảng $-45$ đến $60\,^\circ$C~\cite{wmo2008,murray1967}. & 15{,}49 -- 100 & 0{,}0 \\
 \texttt{wind13} & số thực & m/s & Tốc độ gió 10 m lúc 13 giờ. Biến này không được thu thập (đã bỏ khỏi lời gọi API để giảm hạn mức) nên toàn bộ là giá trị thiếu. & -- & 100{,}0 \\
-\texttt{D13\_\allowbreak hpa} & số thực & hPa & Độ hụt bão hòa lúc 13 giờ: $e_s(T)-e_s(T_d)$. & 0 -- 53{,}67 & 0{,}0 \\
+\texttt{D13\_\allowbreak hpa} & số thực & hPa & Độ hụt bão hòa lúc 13 giờ: $e_s(T)-e_s(T_d)$, cùng công thức $e_s$ ở trên. & 0 -- 53{,}67 & 0{,}0 \\
 \texttt{dd13\_\allowbreak c} & số thực & $^\circ$C & Độ thiếu hụt điểm sương lúc 13 giờ: \texttt{T13} $-$ \texttt{Td13}. & 0 -- 29{,}2 & 0{,}0 \\
 \end{longtable}
 
@@ -208,8 +209,8 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \endhead
 \bottomrule
 \endfoot
-\texttt{rain\_\allowbreak cal} & số thực & mm & Tổng lượng mưa trong ngày dương lịch (0 giờ đến 24 giờ), cộng 24 giá trị theo giờ. & 0 -- 315{,}8 & 0{,}0 \\
-\texttt{rain\_\allowbreak 19\_\allowbreak 19} & số thực & mm & Tổng lượng mưa trong cửa sổ từ 19 giờ hôm trước đến 19 giờ hôm nay. & 0 -- 320{,}6 & 0{,}0 \\
+\texttt{rain\_\allowbreak cal} & số thực & mm & Tổng 24 giá trị lượng mưa theo giờ (\texttt{precipitation} của Open-Meteo) có nhãn thời gian từ 00:00 đến 23:00 của ngày đó. & 0 -- 315{,}8 & 0{,}0 \\
+\texttt{rain\_\allowbreak 19\_\allowbreak 19} & số thực & mm & Tổng 24 giá trị lượng mưa theo giờ có nhãn từ 20:00 hôm trước đến 19:00 hôm nay, tức một cửa sổ 24 giờ lệch 4 giờ so với \texttt{rain\_cal}. & 0 -- 320{,}6 & 0{,}0 \\
 \texttt{rain\_\allowbreak 3d} & số thực & mm & Tổng \texttt{rain\_cal} trong 3 ngày gần nhất, tính cả ngày hiện tại. & 0 -- 560{,}2 & 0{,}0 \\
 \texttt{rain\_\allowbreak 7d} & số thực & mm & Tổng \texttt{rain\_cal} trong 7 ngày gần nhất. & 0 -- 793 & 0{,}0 \\
 \texttt{rain\_\allowbreak 14d} & số thực & mm & Tổng \texttt{rain\_cal} trong 14 ngày gần nhất. & 0 -- 1\,343 & 0{,}0 \\
@@ -221,14 +222,14 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 
 \subsection{Chỉ số kiểu Nesterov}
 
-Chỉ số tích lũy theo ngày trong từng tỉnh, bắt đầu từ ngày 01/01/2011:
+Chỉ số Nesterov gốc~\cite{nesterov1949} là một chỉ số cháy rừng tích lũy: mỗi ngày cộng thêm tích của nhiệt độ và độ thiếu hụt điểm sương, và về 0 khi có mưa lớn; ngưỡng mưa đặt lại khác nhau giữa các tài liệu (thường 2,5 hoặc 3 mm). Các cột \texttt{P\_*} trong bảng này là các biến thể do nhóm xây dựng dựa trên ý tưởng đó, không phải chỉ số chuẩn. Với từng tỉnh, bắt đầu từ ngày 01/01/2011:
 \[
 P_t = \begin{cases}
 0 & \text{nếu } R_t \ge a_0,\\
 P_{t-1} + K_t \cdot \max(T_t,0)\cdot D_t & \text{ngược lại,}
 \end{cases}
 \]
-trong đó $T_t$ là \texttt{T13}, $D_t$ là độ hụt (\texttt{D13\_hpa} hoặc \texttt{dd13\_c}), $R_t$ là lượng mưa ngày (\texttt{rain\_cal}, hoặc \texttt{rain\_19\_19} ở hai biến thể \texttt{alt19}) và $a_0$ là ngưỡng mưa đặt lại về 0. Hệ số $K_t$ bằng 1 khi không mưa (mưa dưới 0,1 mm coi như không mưa); khi có mưa nhưng dưới ngưỡng thì $K_t = (a_0-R_t)/a_0$ với biến thể ``tuyến tính'' và $K_t = 1$ với biến thể ``nhị phân''. Tên cột có dạng \texttt{P\_<hệ số><ngưỡng>\_<độ hụt>}, trong đó \texttt{Dsat} là \texttt{D13\_hpa} (độ hụt bão hòa) và \texttt{Ddew} là \texttt{dd13\_c} (độ thiếu hụt điểm sương). Biến thể mặc định dùng cho phân tích là \texttt{P\_linear5\_Ddew}.
+trong đó $T_t$ là \texttt{T13}, $D_t$ là độ hụt (\texttt{D13\_hpa} hoặc \texttt{dd13\_c}), $R_t$ là lượng mưa ngày (\texttt{rain\_cal}, hoặc \texttt{rain\_19\_19} ở hai biến thể \texttt{alt19}) và $a_0$ là ngưỡng mưa đặt lại về 0, nhóm thử từ 5 đến 10 mm. Hệ số $K_t$ bằng 1 khi không mưa (mưa dưới 0,1 mm coi như không mưa); khi có mưa nhưng dưới ngưỡng thì $K_t = (a_0-R_t)/a_0$ với biến thể ``tuyến tính'' và $K_t = 1$ với biến thể ``nhị phân''. Tên cột có dạng \texttt{P\_<hệ số><ngưỡng>\_<độ hụt>}, trong đó \texttt{Dsat} là \texttt{D13\_hpa} (độ hụt bão hòa) và \texttt{Ddew} là \texttt{dd13\_c} (độ thiếu hụt điểm sương). Biến thể \texttt{P\_linear5\_Ddew} được chọn làm biến thể chính trong phân tích của nhóm trước khi xem kết quả; việc chọn này không dựa trên một tài liệu hiệu chuẩn nào.
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{2.9cm}@{}}
 \caption{26 biến thể của chỉ số Nesterov (đều là số thực, không đơn vị, không thiếu giá trị)}\label{tab:p-variants}\\
@@ -305,10 +306,10 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \bottomrule
 \endfoot
 \texttt{n\_\allowbreak hot\_\allowbreak all} & số nguyên & điểm & Số điểm cháy VIIRS (độ tin cậy \texttt{nominal} hoặc \texttt{high}) trên mọi loại lớp phủ nằm trong tỉnh vào ngày địa phương đó. & 0 -- 553 & 0{,}0 \\
-\texttt{n\_\allowbreak hot\_\allowbreak forest} & số nguyên & điểm & Số điểm cháy độ tin cậy \texttt{nominal} hoặc \texttt{high} nằm trên đất rừng, tức tỉ lệ cây xung quanh điểm cháy $\ge 0{,}5$. & 0 -- 319 & 0{,}0 \\
+\texttt{n\_\allowbreak hot\_\allowbreak forest} & số nguyên & điểm & Số điểm cháy độ tin cậy \texttt{nominal} hoặc \texttt{high} nằm trên đất rừng. Ngưỡng do nhóm đặt: tỉ lệ ô thuộc lớp cây (mã 10 của WorldCover) trong 9 điểm lấy mẫu quanh điểm cháy $\ge 0{,}5$. Đây là định nghĩa thực dụng, không phải định nghĩa rừng của FAO. & 0 -- 319 & 0{,}0 \\
 \texttt{fire\_\allowbreak any\_\allowbreak forest} & 0/1 & -- & Bằng 1 nếu \texttt{n\_hot\_forest} $>0$. Biến kết quả chính của đề tài. & 0 -- 1 & 0{,}0 \\
-\texttt{event\_\allowbreak start} & số nguyên & sự kiện & Số sự kiện cháy rừng bắt đầu vào ngày đó. Sự kiện được gom từ điểm cháy rừng bằng DBSCAN theo không gian và thời gian (bán kính 3,5 km, quy đổi 1,5 km tương ứng 1 ngày). & 0 -- 57 & 0{,}0 \\
-\texttt{large\_\allowbreak event\_\allowbreak active} & 0/1 & -- & Bằng 1 nếu ngày đó nằm trong thời gian của một sự kiện cháy rừng lớn, tức sự kiện có từ 5 điểm cháy trở lên hoặc kéo dài từ 2 ngày trở lên. & 0 -- 1 & 0{,}0 \\
+\texttt{event\_\allowbreak start} & số nguyên & sự kiện & Số sự kiện cháy rừng bắt đầu vào ngày đó. Sự kiện do nhóm định nghĩa: các điểm cháy rừng được gom bằng thuật toán DBSCAN~\cite{ester1996} theo không gian và thời gian, với bán kính 3,5 km và quy đổi 1,5 km tương ứng 1 ngày. & 0 -- 57 & 0{,}0 \\
+\texttt{large\_\allowbreak event\_\allowbreak active} & 0/1 & -- & Bằng 1 nếu ngày đó nằm trong thời gian của một sự kiện cháy rừng lớn. Ngưỡng do nhóm đặt: sự kiện có từ 5 điểm cháy trở lên hoặc kéo dài từ 2 ngày trở lên. & 0 -- 1 & 0{,}0 \\
 \end{longtable}
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.35cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.0cm}@{}}
@@ -328,12 +329,12 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \texttt{month} & số nguyên & tháng & Tháng dương lịch (1 đến 12). & 1 -- 12 & 0{,}0 \\
 \texttt{doy} & số nguyên & ngày & Ngày thứ mấy trong năm (1 đến 366). & 1 -- 366 & 0{,}0 \\
 \texttt{year} & số nguyên & năm & Năm dương lịch. & 2\,012 -- 2\,025 & 0{,}0 \\
-\texttt{days\_\allowbreak from\_\allowbreak tet} & số nguyên & ngày & Số ngày có dấu tính từ mùng 1 Tết Nguyên đán gần nhất (âm là trước Tết, dương là sau Tết). & $-$191 -- 336 & 0{,}0 \\
-\texttt{tet\_\allowbreak win3} & 0/1 & -- & Bằng 1 nếu ngày nằm trong khoảng $\pm 3$ ngày quanh mùng 1 Tết. & 0 -- 1 & 0{,}0 \\
-\texttt{days\_\allowbreak from\_\allowbreak giotuo} & số nguyên & ngày & Số ngày có dấu tính từ ngày Giỗ Tổ Hùng Vương (10/3 âm lịch) gần nhất. & $-$191 -- 268 & 0{,}0 \\
-\texttt{giotuo\_\allowbreak win1} & 0/1 & -- & Bằng 1 nếu ngày nằm trong khoảng $\pm 1$ ngày quanh Giỗ Tổ. & 0 -- 1 & 0{,}0 \\
-\texttt{thanh\_\allowbreak minh\_\allowbreak win1} & 0/1 & -- & Bằng 1 nếu ngày rơi vào 4, 5 hoặc 6 tháng 4 dương lịch (dịp Thanh minh). & 0 -- 1 & 0{,}0 \\
-\texttt{holiday\_\allowbreak solar} & 0/1 & -- & Bằng 1 nếu là một trong các ngày lễ dương lịch: 1/1, 30/4, 1/5, 2/9. & 0 -- 1 & 0{,}0 \\
+\texttt{days\_\allowbreak from\_\allowbreak tet} & số nguyên & ngày & Số ngày có dấu tính từ mùng 1 Tết Nguyên đán gần nhất (âm là trước Tết, dương là sau Tết). Ngày mùng 1 Tết 2012--2025 đã được đối chiếu với một thư viện lịch âm độc lập (Mục~\ref{sec:holidays}). & $-$191 -- 336 & 0{,}0 \\
+\texttt{tet\_\allowbreak win3} & 0/1 & -- & Bằng 1 nếu ngày nằm trong khoảng $\pm 3$ ngày quanh mùng 1 Tết (cửa sổ do nhóm đặt). & 0 -- 1 & 0{,}0 \\
+\texttt{days\_\allowbreak from\_\allowbreak giotuo} & số nguyên & ngày & Số ngày có dấu tính từ ngày Giỗ Tổ Hùng Vương (10/3 âm lịch) gần nhất; đây là ngày nghỉ lễ theo Điều 112 Bộ luật Lao động 2019~\cite{bllđ2019}. & $-$191 -- 268 & 0{,}0 \\
+\texttt{giotuo\_\allowbreak win1} & 0/1 & -- & Bằng 1 nếu ngày nằm trong khoảng $\pm 1$ ngày quanh Giỗ Tổ (cửa sổ do nhóm đặt). & 0 -- 1 & 0{,}0 \\
+\texttt{thanh\_\allowbreak minh\_\allowbreak win1} & 0/1 & -- & Bằng 1 nếu ngày rơi vào 4, 5 hoặc 6 tháng 4 dương lịch. Cửa sổ do nhóm đặt, bao quanh tiết Thanh minh (khoảng 4--5/4). & 0 -- 1 & 0{,}0 \\
+\texttt{holiday\_\allowbreak solar} & 0/1 & -- & Bằng 1 nếu là một trong các ngày lễ dương lịch 1/1, 30/4, 1/5, 2/9 (Điều 112 Bộ luật Lao động 2019~\cite{bllđ2019}); không tính ngày nghỉ liền kề. & 0 -- 1 & 0{,}0 \\
 \end{longtable}
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.35cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.0cm}@{}}
@@ -348,7 +349,7 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \endhead
 \bottomrule
 \endfoot
-\texttt{oni} & số thực & $^\circ$C & Chỉ số ONI (Oceanic Niño Index) của tháng chứa ngày đó: dị thường nhiệt độ mặt biển vùng Niño 3.4, trung bình trượt 3 tháng. Dương là El Niño, âm là La Ni\~na. & $-$1{,}11 -- 2{,}59 & 0{,}0 \\
+\texttt{oni} & số thực & $^\circ$C & Chỉ số ONI do NOAA CPC công bố: trung bình trượt 3 tháng của dị thường nhiệt độ mặt biển (ERSST) vùng Niño 3.4 ($5^\circ$N--$5^\circ$S, $120^\circ$--$170^\circ$W)~\cite{noaaoni}. Giá trị của mùa 3 tháng được gán cho tháng trung tâm của mùa (quy ước của nhóm), và mọi ngày trong tháng nhận cùng một giá trị. CPC dùng ngưỡng $\pm 0{,}5\,^\circ$C để phân loại pha nóng và lạnh. & $-$1{,}11 -- 2{,}59 & 0{,}0 \\
 \texttt{oni\_\allowbreak lag3} & số thực & $^\circ$C & ONI của tháng cách đó 3 tháng về trước. & $-$1{,}11 -- 2{,}59 & 0{,}0 \\
 \end{longtable}
 
@@ -367,26 +368,35 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 \endhead
 \bottomrule
 \endfoot
-\texttt{area\_\allowbreak km2} & số thực & km$^2$ & Diện tích tỉnh, tính từ ranh giới geoBoundaries trên hệ tọa độ UTM 48N (EPSG:32648). Hằng số theo tỉnh. & 881 -- 16\,535 & 0{,}0 \\
-\texttt{forest\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất có cây (lớp 10 của WorldCover) ước lượng từ 1.500 điểm ngẫu nhiên trong tỉnh. Hằng số theo tỉnh. & 0{,}095 -- 0{,}909 & 0{,}0 \\
-\texttt{crop\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất nông nghiệp (lớp 40), cách tính như trên. & 0{,}028 -- 0{,}715 & 0{,}0 \\
-\texttt{grass\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất cỏ (lớp 30), cách tính như trên. & 0{,}005 -- 0{,}293 & 0{,}0 \\
-\texttt{built\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất xây dựng (lớp 50), cách tính như trên. & 0{,}002 -- 0{,}241 & 0{,}0 \\
-\texttt{rep\_\allowbreak elev\_\allowbreak m} & số thực & m & Độ cao do Open-Meteo trả về cho điểm đại diện của tỉnh. & 1 -- 1\,222 & 0{,}0 \\
+\texttt{area\_\allowbreak km2} & số thực & km$^2$ & Diện tích tỉnh, tính xấp xỉ từ ranh giới geoBoundaries trên hệ UTM 48N (EPSG:32648) cho cả nước. Hằng số theo tỉnh. & 881 -- 16\,535 & 0{,}0 \\
+\texttt{forest\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất có cây (mã 10, Tree cover của WorldCover) ước lượng từ 1.500 điểm ngẫu nhiên trong tỉnh. Hằng số theo tỉnh. & 0{,}095 -- 0{,}909 & 0{,}0 \\
+\texttt{crop\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất nông nghiệp (mã 40, Cropland), cách tính như trên. & 0{,}028 -- 0{,}715 & 0{,}0 \\
+\texttt{grass\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất cỏ (mã 30, Grassland), cách tính như trên. & 0{,}005 -- 0{,}293 & 0{,}0 \\
+\texttt{built\_\allowbreak share} & số thực & tỉ lệ & Tỉ lệ đất xây dựng (mã 50, Built-up), cách tính như trên. & 0{,}002 -- 0{,}241 & 0{,}0 \\
+\texttt{rep\_\allowbreak elev\_\allowbreak m} & số thực & m & Giá trị \texttt{elevation} do API Open-Meteo trả về cho điểm đại diện của tỉnh. & 1 -- 1\,222 & 0{,}0 \\
 \texttt{rep\_\allowbreak lat} & số thực & độ & Vĩ độ điểm đại diện của tỉnh (điểm nằm chắc chắn trong đa giác ranh giới), dùng để lấy dữ liệu thời tiết. & 9{,}08 -- 22{,}78 & 0{,}0 \\
 \texttt{rep\_\allowbreak lon} & số thực & độ & Kinh độ điểm đại diện của tỉnh. & 103{,}2 -- 109{,}1 & 0{,}0 \\
 \end{longtable}
 
 \section{Chất lượng dữ liệu và lưu ý khi sử dụng}
 
+Các mục sau được kiểm tra trực tiếp trên \texttt{panel.csv}:
 \begin{itemize}
 \item Không có dòng trùng theo (\texttt{date}, \texttt{prov}) và không thiếu ngày nào ở bất kỳ tỉnh nào (mỗi tỉnh đúng 5.095 dòng).
 \item Thời tiết đầy đủ: \texttt{T13}, \texttt{Td13}, \texttt{D13\_hpa} và \texttt{rain\_cal} không có giá trị thiếu, cột \texttt{wx\_missing} luôn bằng 0.
 \item Cột \texttt{wind13} rỗng hoàn toàn vì biến gió không được thu thập; cột được giữ lại để thống nhất với mã nguồn.
-\item Điểm cháy do vệ tinh ghi nhận nên chịu ảnh hưởng của mây che và thời điểm bay qua. Vì vậy \texttt{fire\_any\_forest} là cháy được vệ tinh phát hiện chứ không phải toàn bộ cháy thực tế.
-\item Việc phân biệt rừng và không phải rừng dựa trên ngưỡng $\texttt{tree\_frac}\ge 0{,}5$ quanh điểm cháy; đổi ngưỡng sẽ làm tỉ lệ ngày cháy thay đổi đáng kể.
+\item Số điểm cháy thô theo từng tháng không có tháng nào dưới 1.000 điểm trong cả giai đoạn, tức không có khoảng trống dữ liệu. Tỉ lệ điểm độ tin cậy \texttt{low} thấp nhất vào năm 2022 (6,5\%, các năm khác từ 7,6\% đến 10,4\%); nguyên nhân chưa rõ, và bảng chỉ đếm điểm \texttt{nominal} và \texttt{high}.
+\end{itemize}
+
+Các giới hạn của nguồn và của cách xây dựng:
+\begin{itemize}
+\item Điểm cháy do vệ tinh ghi nhận nên không phải toàn bộ cháy thực tế: cảm biến quang học và hồng ngoại không quan sát được cháy dưới mây dày, và chỉ có khoảng hai lần quan sát mỗi ngày quanh 13:30 và 01:30 giờ địa phương~\cite{schroeder2014}. Vì vậy \texttt{fire\_any\_forest} là cháy được vệ tinh phát hiện.
+\item Việc phân biệt rừng và không phải rừng dựa trên ngưỡng $\texttt{tree\_frac}\ge 0{,}5$ do nhóm đặt và trên bản đồ có độ chính xác tổng thể toàn cầu 76,7\%~\cite{zanaga2022}; đổi ngưỡng sẽ làm tỉ lệ ngày cháy thay đổi đáng kể.
+\item Thời tiết lấy từ một điểm trên lưới ERA5 khoảng 25 km cho mỗi tỉnh nên chỉ đại diện cho tỉnh ở mức thô, nhất là với các tỉnh rộng hoặc nhiều địa hình.
 \item \texttt{T13\_anom} và \texttt{D13\_anom} dùng khí hậu tính đến 31/12/2023 nên trùng một phần với giai đoạn phân tích.
 \item Các cột đặc trưng tĩnh được ước lượng từ lớp phủ đất năm 2021 và coi là không đổi trong cả giai đoạn.
+\item Giá trị ONI là bản CPC công bố ngày 05/11/2026 và có thể được hiệu chỉnh về sau.
+\item Các ngưỡng, cửa sổ và định nghĩa do nhóm đặt (độ tin cậy \texttt{nominal} và \texttt{high}, ngưỡng rừng, sự kiện cháy lớn, cửa sổ ngày lễ, các biến thể chỉ số Nesterov) đã được nêu rõ ở các mục trên; chúng không phải chuẩn chung.
 \end{itemize}
 
 \section{Tệp bàn giao và tái lập}
@@ -397,4 +407,22 @@ Bộ giao nộp gồm tài liệu này và tệp \texttt{panel.csv}. Toàn bộ 
 \item Dữ liệu đầy đủ (dữ liệu thô, bảng trung gian, bảng gộp, bảng sạch): \url{https://huggingface.co/datasets/VLUS06/vn-forest-fire-data}
 \end{itemize}
 
+\renewcommand{\refname}{Tài liệu tham khảo}
+\begin{thebibliography}{99}
+\bibitem{schroeder2014} Schroeder, W., Oliva, P., Giglio, L., Csiszar, I. A. (2014). The New VIIRS 375 m active fire detection data product: Algorithm description and initial assessment. \textit{Remote Sensing of Environment}, 143, 85--96. \url{https://doi.org/10.1016/j.rse.2013.12.008}
+\bibitem{firms} NASA FIRMS. Fire Information for Resource Management System, API vùng. \url{https://firms.modaps.eosdis.nasa.gov/api/area/}
+\bibitem{arset} NASA ARSET. \textit{Advanced NASA Earth Observations and Tools for Active Fire, Smoke, and Post-Fire Monitoring}, Part 1 Q\&A: ``VIIRS 375 m (S-NPP) data are currently available from 20 January 2012 to the present''. \url{https://www.earthdata.nasa.gov/s3fs-public/2026-01/arset-2026-advfirms-part1-qa.pdf}
+\bibitem{hersbach2020} Hersbach, H. và cộng sự (2020). The ERA5 global reanalysis. \textit{Quarterly Journal of the Royal Meteorological Society}, 146(730), 1999--2049. \url{https://doi.org/10.1002/qj.3803}
+\bibitem{openmeteo} Zippenfenig, P. Open-Meteo.com Weather API. Zenodo. \url{https://doi.org/10.5281/zenodo.7970649} (giấy phép CC BY 4.0).
+\bibitem{zanaga2022} Zanaga, D. và cộng sự (2022). ESA WorldCover 10 m 2021 v200. Zenodo. \url{https://doi.org/10.5281/zenodo.7254221}
+\bibitem{runfola2020} Runfola, D. và cộng sự (2020). geoBoundaries: A global database of political administrative boundaries. \textit{PLOS ONE}, 15(4), e0231866. \url{https://doi.org/10.1371/journal.pone.0231866}
+\bibitem{noaaoni} NOAA Climate Prediction Center. Oceanic Niño Index (ONI). \url{https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/oni/v6/}; tệp dữ liệu \url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}
+\bibitem{wmo2008} World Meteorological Organization (2008). \textit{Guide to Meteorological Instruments and Methods of Observation} (WMO-No. 8, CIMO Guide).
+\bibitem{murray1967} Murray, F. W. (1967). On the computation of saturation vapor pressure. \textit{Journal of Applied Meteorology}, 6, 203--204.
+\bibitem{nesterov1949} Nesterov, V. G. (1949). \textit{Gorimost' lesa i metody ee opredeleniya} (Độ dễ cháy của rừng và các phương pháp xác định). Goslesbumizdat, Moskva.
+\bibitem{ester1996} Ester, M., Kriegel, H.-P., Sander, J., Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. \textit{Proceedings of KDD-96}, 226--231.
+\bibitem{bllđ2019} Quốc hội nước Cộng hòa xã hội chủ nghĩa Việt Nam (2019). Bộ luật Lao động, Luật số 45/2019/QH14, Điều 112 (Nghỉ lễ, tết).
+\end{thebibliography}
+
 \end{document}
+
