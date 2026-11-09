@@ -25,3 +25,8 @@ Seen before this document: dataset sizes, per-region base rates of fire_any_fore
 - H6 (exploratory): season-level association between mean oni_lag3 and province-standardised number of fire days (per region, Spearman).
 ## Not allowed after seeing results
 Changing the primary P variant, the eligibility thresholds, the families, or the season definition for confirmatory claims. Any deviation is reported as exploratory.
+
+## Amendment 1 (2026-11-09, written after the analyses in notebook 05 had been run)
+- The original primary variant P_linear5_Ddew had no recorded source for its choice (linear K and the 5 mm reset were team choices). It is replaced as the primary variant by P_vn_5mm_Ddew: K = 1 and the sum restarts from 0 when daily rain exceeds 5 mm, P = sum of T13 * (T13 - Td13) (Nguyen Van Them, Le Hong Viet, Nguyen Van Quy, 2024, Tap chi Khoa hoc va Cong nghe Lam nghiep 13(6), 67-74, eq. 3 and Section 3.2; the 5 mm threshold with K in {0,1} also appears in Quyet dinh 07/2024/QD-UBND of Kien Giang, whose formula is an image on the page read and whose saturation-deficit form is kept as P_vn_5mm_Dsat).
+- This change was made after the association results were seen, so under the rule above it is a deviation. Notebook 05 reports the ranking of all 29 variants (the new primary ranks 8th, AUC 0.687, versus 0.695 for the 3 mm variant), so the choice is not claimed to be data-optimal.
+- Also disclosed: the eligibility thresholds and region seasons were set after dataset summaries had been viewed, not only base rates. The season definition is no longer used by the shipped panel; the analysis sample is defined in notebook 03.

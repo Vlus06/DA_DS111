@@ -51,7 +51,7 @@ Bộ dữ liệu ghép điểm cháy do vệ tinh VIIRS ghi nhận, thời tiế
 \begin{itemize}
 \item Đơn vị quan sát: một tỉnh trong một ngày (theo giờ địa phương Việt Nam, UTC+7).
 \item Khóa chính: cặp (\texttt{date}, \texttt{prov}); không có dòng trùng và không thiếu ngày nào.
-\item Kích thước: 320\,985 dòng $\times$ 74 cột, tức 63 tỉnh $\times$ 5\,095 ngày.
+\item Kích thước: 320\,985 dòng $\times$ 76 cột, tức 63 tỉnh $\times$ 5\,095 ngày.
 \item Phạm vi thời gian: từ 20/01/2012 đến 31/12/2025.
 \item Phạm vi không gian: 63 tỉnh, thành phố theo ranh giới cũ trước sáp nhập (Côn Đảo gộp vào Bà Rịa -- Vũng Tàu).
 \item Định dạng: CSV mã hóa UTF-8, dấu phân cách là dấu phẩy, dòng đầu là tên cột, giá trị thiếu để trống.
@@ -158,7 +158,7 @@ Mã & Vùng & Số tỉnh & Các tỉnh \\
 
 \section{Mô tả các biến}\label{sec:features}
 
-Tệp \texttt{panel.csv} có 74 cột, chia thành các nhóm dưới đây. Cột ``Thiếu (\%)'' là tỉ lệ giá trị thiếu trong toàn bảng, cột ``Miền giá trị'' là giá trị nhỏ nhất và lớn nhất. Dấu thập phân trong các bảng là dấu phẩy.
+Tệp \texttt{panel.csv} có 76 cột, chia thành các nhóm dưới đây. Cột ``Thiếu (\%)'' là tỉ lệ giá trị thiếu trong toàn bảng, cột ``Miền giá trị'' là giá trị nhỏ nhất và lớn nhất. Dấu thập phân trong các bảng là dấu phẩy.
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.35cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.0cm}@{}}
 \caption{Khóa và định danh}\label{tab:identity}\\
@@ -221,14 +221,14 @@ Tên cột & Kiểu & Đơn vị & Mô tả và cách tính & Miền giá trị 
 
 \subsection{Chỉ số kiểu Nesterov}
 
-Chỉ số Nesterov gốc~\cite{nesterov1949} là một chỉ số cháy rừng tích lũy: mỗi ngày cộng thêm tích của nhiệt độ và độ thiếu hụt điểm sương, và về 0 khi có mưa lớn; ngưỡng mưa đặt lại khác nhau giữa các tài liệu (thường 2,5 hoặc 3 mm). Các cột \texttt{P\_*} trong bảng này là các biến thể do nhóm xây dựng dựa trên ý tưởng đó, không phải chỉ số chuẩn. Với từng tỉnh, bắt đầu từ ngày 01/01/2011:
+Chỉ số Nesterov gốc~\cite{nesterov1949} là một chỉ số cháy rừng tích lũy: mỗi ngày cộng thêm tích của nhiệt độ và độ thiếu hụt điểm sương, và về 0 khi có mưa lớn; ngưỡng mưa đặt lại khác nhau giữa các tài liệu (thường 2,5 hoặc 3 mm). Các cột \texttt{P\_*} trong bảng này là các biến thể dựa trên ý tưởng đó, không phải chỉ số chuẩn duy nhất. Với từng tỉnh, bắt đầu từ ngày 01/01/2011:
 \[
 P_t = \begin{cases}
 0 & \text{nếu } R_t \ge a_0,\\
 P_{t-1} + K_t \cdot \max(T_t,0)\cdot D_t & \text{ngược lại,}
 \end{cases}
 \]
-trong đó $T_t$ là \texttt{T13}, $D_t$ là độ hụt (\texttt{D13\_hpa} hoặc \texttt{dd13\_c}), $R_t$ là lượng mưa ngày (\texttt{rain\_cal}, hoặc \texttt{rain\_19\_19} ở hai biến thể \texttt{alt19}) và $a_0$ là ngưỡng mưa đặt lại về 0, nhóm thử từ 5 đến 10 mm. Hệ số $K_t$ bằng 1 khi không mưa (mưa dưới 0,1 mm coi như không mưa); khi có mưa nhưng dưới ngưỡng thì $K_t = (a_0-R_t)/a_0$ với biến thể ``tuyến tính'' và $K_t = 1$ với biến thể ``nhị phân''. Tên cột có dạng \texttt{P\_<hệ số><ngưỡng>\_<độ hụt>}, trong đó \texttt{Dsat} là \texttt{D13\_hpa} (độ hụt bão hòa) và \texttt{Ddew} là \texttt{dd13\_c} (độ thiếu hụt điểm sương). Riêng cột \texttt{P\_nesterov\_3mm} là biến thể gần với chỉ số Nesterov gốc nhất: tính từ \texttt{T13} và \texttt{dd13\_c}, hệ số $K_t = 1$, và về 0 khi lượng mưa ngày lớn hơn 3 mm (cài đặt bằng ngưỡng 3,05 mm vì lượng mưa có độ phân giải 0,1 mm). Nó khác chỉ số gốc ở chỗ dùng nhiệt độ lúc 13 giờ thay vì nhiệt độ cực đại trong ngày. Biến thể \texttt{P\_linear5\_Ddew} được dùng làm biến thể chính với ba căn cứ. Một, nó giữ cấu trúc của chỉ số Nesterov gốc: cộng dồn tích của nhiệt độ và độ thiếu hụt điểm sương ($T-T_d$, cột \texttt{dd13\_c}) và về 0 khi có mưa lớn~\cite{nesterov1949}. Hai, hệ số $K_t$ giảm tuyến tính theo lượng mưa vì mưa nhỏ chỉ làm ẩm một phần nhiên liệu chứ không xóa hết độ khô đã tích lũy. Ba, ngưỡng 5 mm là mức thấp nhất trong dải 5 đến 10 mm mà nhóm khảo sát. Biến thể chính đã được ấn định trong tài liệu đăng ký trước của nhóm (\texttt{docs/prereg\_v1.md} trong kho mã), được viết trước khi tính bất kỳ quan hệ nào giữa thời tiết và điểm cháy. Sau đó nhóm so sánh cả 27 biến thể bằng khả năng tách ngày cháy khỏi ngày không cháy trong cùng tỉnh và cùng tháng (AUC, trung bình sáu vùng có rừng) để kiểm tra lựa chọn: biến thể chính đạt 0,689, xếp thứ 4 trên 27 và thấp hơn biến thể tốt nhất (\texttt{P\_nesterov\_3mm}, 0,695) khoảng 0,007; AUC giảm đều khi ngưỡng đặt lại tăng từ 5 đến 10 mm, còn hệ số tuyến tính hay nhị phân (0,671 và 0,669) và độ hụt \texttt{Dsat} hay \texttt{Ddew} (0,672 và 0,670) gần như không khác nhau. Đổi sang biến thể khác không làm thay đổi kết luận của nhóm.
+trong đó $T_t$ là \texttt{T13}, $D_t$ là độ hụt (\texttt{D13\_hpa} hoặc \texttt{dd13\_c}), $R_t$ là lượng mưa ngày (\texttt{rain\_cal}, hoặc \texttt{rain\_19\_19} ở hai biến thể \texttt{alt19}) và $a_0$ là ngưỡng mưa đặt lại về 0, nhóm thử từ 5 đến 10 mm. Hệ số $K_t$ bằng 1 khi không mưa (mưa dưới 0,1 mm coi như không mưa); khi có mưa nhưng dưới ngưỡng thì $K_t = (a_0-R_t)/a_0$ với biến thể ``tuyến tính'' và $K_t = 1$ với biến thể ``nhị phân''. Tên cột có dạng \texttt{P\_<hệ số><ngưỡng>\_<độ hụt>}, trong đó \texttt{Dsat} là \texttt{D13\_hpa} (độ hụt bão hòa) và \texttt{Ddew} là \texttt{dd13\_c} (độ thiếu hụt điểm sương). Riêng cột \texttt{P\_nesterov\_3mm} là biến thể gần với chỉ số Nesterov gốc nhất: tính từ \texttt{T13} và \texttt{dd13\_c}, hệ số $K_t = 1$, và về 0 khi lượng mưa ngày lớn hơn 3 mm (cài đặt bằng ngưỡng 3,05 mm vì lượng mưa có độ phân giải 0,1 mm). Nó khác chỉ số gốc ở chỗ dùng nhiệt độ lúc 13 giờ thay vì nhiệt độ cực đại trong ngày. Biến thể \texttt{P\_vn\_5mm\_Ddew} được dùng làm biến thể chính vì đây là cách áp dụng chỉ số Nesterov trong quản lý cháy rừng ở Việt Nam: bài của Nguyễn Văn Thêm và cộng sự~\cite{them2024} (phương trình 3) tính $P=K\sum T_{13}(T_{13}-T^{d}_{13})$ với $K=1$ khi mưa ngày dưới 5 mm và $K=0$ (về 0) khi mưa ngày trên 5 mm, và Quyết định 07/2024/QĐ-UBND của tỉnh Kiên Giang~\cite{kiengiang2024} cũng quy định $K=1$ khi mưa ngày không quá 5 mm, $K=0$ khi trên 5 mm, nhưng nhân với độ hụt bão hòa lúc 13 giờ; dạng này được giữ ở cột \texttt{P\_vn\_5mm\_Dsat}. Công thức trong văn bản của Kiên Giang chỉ hiện ở dạng ảnh trên trang đã đọc, nên cách cộng dồn và đặt lại ở đây lấy từ bài báo. Cả hai nguồn không nêu giờ đo mưa ngày; nhóm dùng mưa theo ngày lịch (\texttt{rain\_cal}). Cột \texttt{P\_nesterov\_3mm} (ngưỡng 3 mm của chỉ số gốc) và 26 biến thể còn lại với ngưỡng 5 đến 10 mm, hệ số tuyến tính hoặc nhị phân, được giữ để kiểm tra độ nhạy, không phải để chọn lại biến thể chính. Biến thể chính được chọn trước khi xem kết quả so sánh dưới đây, nhưng nhóm chỉ ghi lại căn cứ này sau khi đã chạy phân tích (xem phụ lục ở \texttt{docs/prereg\_v1.md}, mục Amendment~1). So cả 29 biến thể bằng khả năng tách ngày cháy khỏi ngày không cháy trong cùng tỉnh và cùng tháng (AUC, trung bình sáu vùng có rừng): biến thể chính đạt 0,687, xếp thứ 8 trên 29, thấp hơn biến thể tốt nhất (\texttt{P\_nesterov\_3mm}, 0,695) khoảng 0,008; AUC giảm đều khi ngưỡng đặt lại tăng từ 5 đến 10 mm, còn hệ số tuyến tính hay nhị phân (0,671 và 0,669) và độ hụt \texttt{Dsat} hay \texttt{Ddew} (0,673 và 0,671) gần như không khác nhau.
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{2.9cm}@{}}
 \caption{Các biến thể của chỉ số Nesterov: 26 biến thể do nhóm xây dựng và \texttt{P\_nesterov\_3mm} (đều là số thực, không đơn vị, không thiếu giá trị)}\label{tab:p-variants}\\
@@ -269,6 +269,8 @@ Tên cột & Hệ số $K$ & Ngưỡng $a_0$ (mm) & Độ hụt $D$ & Miền gi�
 \texttt{P\_\allowbreak alt19\_\allowbreak linear7\_\allowbreak Dsat} & tuyến tính & 7 & \texttt{D13\_hpa}; mưa \texttt{rain\_19\_19} & 0 -- 136\,004 \\
 \texttt{P\_\allowbreak alt19\_\allowbreak binary5\_\allowbreak Dsat} & nhị phân & 5 & \texttt{D13\_hpa}; mưa \texttt{rain\_19\_19} & 0 -- 123\,686 \\
 \texttt{P\_\allowbreak nesterov\_\allowbreak 3mm} & nhị phân (gần chỉ số gốc) & 3 & \texttt{dd13\_c} & 0 -- 55\,391 \\
+\texttt{P\_\allowbreak vn\_\allowbreak 5mm\_\allowbreak Ddew} & nhị phân & 5 & \texttt{dd13\_c} & 0 -- 58\,990 \\
+\texttt{P\_\allowbreak vn\_\allowbreak 5mm\_\allowbreak Dsat} & nhị phân & 5 & \texttt{D13\_hpa} & 0 -- 128\,232 \\
 \end{longtable}
 
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.35cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.0cm}@{}}
@@ -418,6 +420,8 @@ Bộ giao nộp gồm tài liệu này và tệp \texttt{panel.csv}. Toàn bộ 
 \bibitem{wmo2008} World Meteorological Organization (2008). \textit{Guide to Meteorological Instruments and Methods of Observation} (WMO-No. 8, CIMO Guide).
 \bibitem{murray1967} Murray, F. W. (1967). On the computation of saturation vapor pressure. \textit{Journal of Applied Meteorology}, 6, 203--204.
 \bibitem{nesterov1949} Nesterov, V. G. (1949). \textit{Gorimost' lesa i metody ee opredeleniya} (Độ dễ cháy của rừng và các phương pháp xác định). Goslesbumizdat, Moskva.
+\bibitem{them2024} Nguyễn Văn Thêm, Lê Hồng Việt, Nguyễn Văn Quý (2024). Các hàm phân cấp nguy cơ cháy rừng tại khu vực Bảo Lâm thuộc tỉnh Lâm Đồng. \textit{Tạp chí Khoa học và Công nghệ Lâm nghiệp}, 13(6), 67--74. \url{https://doi.org/10.55250/jo.vnuf.13.6.2024.067-074}
+\bibitem{kiengiang2024} Ủy ban nhân dân tỉnh Kiên Giang (2024). Quyết định 07/2024/QĐ-UBND ngày 28/02/2024 về cấp dự báo cháy rừng và các bảng tra cấp dự báo cháy rừng trên địa bàn tỉnh Kiên Giang (có hiệu lực từ 12/03/2024).
 \bibitem{ester1996} Ester, M., Kriegel, H.-P., Sander, J., Xu, X. (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. \textit{Proceedings of KDD-96}, 226--231.
 \bibitem{bllđ2019} Quốc hội nước Cộng hòa xã hội chủ nghĩa Việt Nam (2019). Bộ luật Lao động, Luật số 45/2019/QH14, Điều 112 (Nghỉ lễ, tết).
 \end{thebibliography}
