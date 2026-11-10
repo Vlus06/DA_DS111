@@ -76,7 +76,7 @@ DoAn_CayRung/
 │   │
 │   └── clean/                          # bảng sạch, notebook 03 ghi
 │       ├── panel_clean.csv             # bảng đã làm sạch và thêm đặc trưng, có cờ analysis_sample đánh dấu mẫu phân tích
-│       ├── data_dictionary.csv         # từ điển cột: tên, nhóm, kiểu, % null
+│       ├── data_dictionary.csv         # từ điển cột: tên, nhóm, kiểu, % null, mô tả
 │       └── eligible_provinces.csv      # 49 tỉnh đủ điều kiện (40 tỉnh ở 6 vùng có rừng thuộc mẫu phân tích)
 │
 └── docs/
