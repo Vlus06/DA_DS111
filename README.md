@@ -23,6 +23,45 @@ Mở Jupyter từ thư mục `notebooks/` vì mọi đường dẫn là `../data
 | NOAA CPC | chỉ số ONI, đo El Niño và La Niña | tệp văn bản theo tháng |
 | Nhập tay | ngày Tết, Giỗ Tổ (kiểm chứng bằng thư viện lịch âm) | bảng trong `utils_firerisk.py` |
 
+## Mỗi nguồn cho những feature nào và ghép lại thế nào
+
+Bảng `panel.csv` có mỗi dòng là một tỉnh trong một ngày (63 tỉnh x 5.095 ngày = 320.985 dòng, 76 cột). Mỗi nguồn trả lời một câu hỏi khác nhau.
+
+| Nguồn | Câu hỏi nó trả lời | Dữ liệu thô | Feature trong `panel.csv` | Vai trò |
+|---|---|---|---|---|
+| NASA FIRMS (VIIRS S-NPP) | Ở đâu, ngày nào có cháy? | danh sách điểm cháy: vĩ độ, kinh độ, giờ vệ tinh bay qua, độ tin cậy, công suất cháy | `n_hot_all`, `n_hot_forest`, `fire_any_forest`, `event_start`, `large_event_active` | biến kết quả, thứ cần giải thích |
+| Open-Meteo Archive (ERA5) | Hôm đó trời thế nào? | nhiệt độ, điểm sương, mưa theo giờ tại một điểm đại diện của tỉnh | `T13`, `Td13`, `RH13`, `D13_hpa`, `dd13_c`, các cột mưa (`rain_cal`, `rain_3d`, `rain_7d`, `rain_14d`, `rain_30d`), `dsr_*`, `T13_roll7`, `D13_roll7`, `T13_anom`, `D13_anom` và các cột `P_*` | biến giải thích về độ khô; lấy giá trị 13h vì vệ tinh bay qua khoảng 13:30 |
+| ESA WorldCover 2021 | Điểm cháy rơi trên loại đất nào? | bản đồ lớp phủ 10 m (cây, cỏ, nông nghiệp, xây dựng) | `n_hot_forest`, `forest_share`, `crop_share`, `grass_share`, `built_share` | tách cháy rừng khỏi đốt đồng ruộng và đô thị |
+| geoBoundaries ADM1 | Điểm cháy thuộc tỉnh nào? | đa giác ranh giới 63 tỉnh cũ | khóa `prov`, `area_km2`, `rep_lat`, `rep_lon` | khóa nối giữa điểm cháy và tỉnh |
+| NOAA CPC | Năm đó là El Niño hay La Niña? | chỉ số ONI theo tháng | `oni`, `oni_lag3` | kiểm tra ảnh hưởng của khí hậu quy mô lớn |
+| Nhập tay | Hôm đó có phải ngày lễ không? | ngày Tết, Giỗ Tổ, Thanh minh, các ngày lễ dương lịch | `days_from_tet`, `tet_win3`, `days_from_giotuo`, `giotuo_win1`, `thanh_minh_win1`, `holiday_solar`, cùng `dow`, `is_weekend`, `month`, `doy`, `year` | kiểm tra dấu vết của con người, ví dụ cháy giảm quanh Tết |
+
+Khóa nối là (tỉnh, ngày địa phương). Việc ghép gồm ba bước:
+
+1. **Điểm cháy thành tỉnh và loại đất.** Mỗi điểm cháy được đối chiếu với đa giác tỉnh để biết nó thuộc tỉnh nào, rồi lấy 9 điểm mẫu quanh nó trên bản đồ WorldCover. Nếu từ một nửa số mẫu trở lên là cây (`tree_frac` >= 0,5) thì điểm đó tính là cháy rừng. Giờ vệ tinh (UTC) được đổi sang giờ địa phương (UTC+7) để có đúng ngày.
+2. **Đếm theo tỉnh và ngày.** Số điểm cháy của từng tỉnh trong từng ngày thành `n_hot_all` (mọi loại đất) và `n_hot_forest` (chỉ rừng). `fire_any_forest` bằng 1 nếu `n_hot_forest` lớn hơn 0.
+3. **Gắn thời tiết, lịch và đặc trưng tĩnh.** Thời tiết của tỉnh vào ngày đó nối theo khóa (tỉnh, ngày). Lịch và ONI nối theo ngày hoặc tháng. Đặc trưng tĩnh như `forest_share` lặp lại giống nhau ở mọi ngày của cùng một tỉnh.
+
+Các biến trễ như `rain_30d`, `dsr_5` và chỉ số P cộng dồn nhiều ngày được tính từ chuỗi thời tiết riêng của từng tỉnh, bắt đầu từ 01/01/2011, nên những ngày đầu của 2012 các biến này đã có giá trị.
+
+Ví dụ thật, Gia Lai, 10 đến 13/03/2019:
+
+| ngày | T13 | Td13 | D13_hpa | rain_cal | P_vn_5mm_Ddew | n_hot_all | n_hot_forest | fire_any_forest |
+|---|---|---|---|---|---|---|---|---|
+| 10/03 | 34,5 | 16,9 | 35,4 | 0 | 30.551 | 65 | 22 | 1 |
+| 11/03 | 35,8 | 15,5 | 41,1 | 0 | 31.278 | 68 | 15 | 1 |
+| 12/03 | 31,0 | 18,9 | 23,1 | 1,4 | 31.653 | 35 | 8 | 1 |
+| 13/03 | 31,0 | 19,1 | 22,8 | 3,1 | 32.022 | 26 | 5 | 1 |
+
+Ngày 11/03 nóng và rất khô (T13 35,8 độ C, điểm sương chỉ 15,5 độ C) nên độ hụt bão hòa lên 41,1 hPa, và có 68 điểm cháy trong đó 15 điểm trên rừng. Không có mưa trên 5 mm nên P cứ tích lũy tăng đều; một ngày mưa trên 5 mm sẽ đưa P về 0. Khi mưa 1,4 và 3,1 mm xuất hiện và độ hụt giảm, số điểm cháy giảm dần. Đây cũng là phát hiện chính của bài: biến đo ngay trong ngày (độ hụt bão hòa) bám sát cháy hơn chỉ số P tích lũy.
+
+Những điểm dễ nhầm:
+
+- Điểm cháy thô nằm ở `data/interim/hotspots_enriched.csv`, không nằm trong `panel.csv`. `panel.csv` chỉ giữ số đếm theo ngày.
+- `panel.csv` không có các cột mùa (`season`, `in_season`). Các cột này chỉ có ở `panel_clean.csv` vì mùa là giả định của phân tích.
+- Mỗi tỉnh chỉ có một điểm thời tiết đại diện, nên thời tiết chỉ là mức thô cho cả tỉnh.
+- Điểm cháy do vệ tinh ghi nhận nên không phải toàn bộ cháy thực tế: cảm biến không thấy cháy dưới mây dày và chỉ quan sát khoảng hai lần mỗi ngày.
+
 ## Dữ liệu
 
 Toàn bộ dữ liệu (khoảng 1,2 GB, hơn 1.900 tệp CSV) nằm trên Hugging Face, không nằm trong repo này: [VLUS06/vn-forest-fire-data](https://huggingface.co/datasets/VLUS06/vn-forest-fire-data)
